@@ -7,7 +7,7 @@ A Flask based web app for **multi-label movie genre classification** using both 
 ## 🚀 Live Demo
 
 - [Demo 1](https://myapp-284861369113.us-central1.run.app/)
-- [Demo 2](https://movie-genre-classification-sys.onrender.com)
+- [Demo 2](https://multimodalmoviegenreclassificationsys.onrender.com)
 
 ---
 
