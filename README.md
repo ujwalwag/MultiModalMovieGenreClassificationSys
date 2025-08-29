@@ -65,37 +65,12 @@ A Flask web app for **multi-label movie genre classification** using both **text
 - torch, torchvision
 - Docker (optional, for deployment)
 
-### Installation
-
-```bash
-git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
-cd Movie-Genre-Classification-Sys
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-### Run Locally
-
-```bash
-python app.py
-```
-Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
-
-### Run with Docker
-
-```bash
-docker build -t movie-genre-classifier .
-docker run -p 5000:5000 movie-genre-classifier
-```
-
----
 ### 💡 How to Use (For People Cloning the Repo)
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
-   cd Movie-Genre-Classification-Sys
+   git clone https://github.com/ujwalwag/MultiModalMovieGenreClassificationSys.git
+   cd MultiModalMovieGenreClassificationSys
    ```
 
 2. **Create and activate a virtual environment:**
