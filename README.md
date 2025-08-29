@@ -105,10 +105,6 @@ A Flask based web app for **multi-label movie genre classification** using both 
 
 ---
 
-**Tip:**  
-For Docker deployment, use the provided `Dockerfile` and follow the Docker instructions
----
-
 ## 🧠 Model Details
 
 ### Text Model (LSTM)
