@@ -1,0 +1,10 @@
+{
+  "word_index": {
+    "<OOV>": 0
+  },
+  "index_word": {
+    "0": "<OOV>"
+  },
+  "num_words": 20000,
+  "oov_token": "<OOV>"
+}

@@ -1,0 +1,17 @@
+flask
+gunicorn
+scikit-learn
+joblib
+numpy
+nltk>=3.8
+torch
+torchvision
+Pillow
+<<<<<<< HEAD
+pandas
+matplotlib
+seaborn
+requests
+tqdm
+=======
+>>>>>>> 4916501a34de1434826411fc42bfe7ae51b83fd9
