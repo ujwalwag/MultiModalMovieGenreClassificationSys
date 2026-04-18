@@ -1,86 +1,83 @@
-# 🎬 Multi-Modal Movie Genre Classification System
+# Multi-Modal Movie Genre Classification System
 
-A Flask web app for **multi-label movie genre classification** using both **textual (plot)** and **visual (poster image)** inputs. Combines LSTM (text) and ResNet-18 (image) models trained on a balanced TMDB dataset across the top 10 genres.
+A Flask web app for **multi-label movie genre classification** using both **text** (plot) and **visual** (poster) inputs. It combines an LSTM text model with GloVe embeddings and a ResNet-18 image model, trained on a balanced TMDB dataset across the top 10 genres. The stack is **Python 3.8+**, **PyTorch**, and **Flask**.
 
 ---
 
-## 🚀 Live Demo
+## Live demo
 
 - [Demo 1](https://myapp-284861369113.us-central1.run.app/)
 - [Demo 2](https://movie-genre-classification-sys.onrender.com)
 
 ---
 
-## 🧠 Features
+## Features
 
-- **Text-based Genre Classification** (LSTM + GloVe embeddings)
-- **Image-based Genre Classification** (ResNet-18)
-- **Multi-modal predictions** for accurate multi-label output
-- **Web interface**: Enter plot and/or upload poster
-- **Visual genre probability predictions**
-- **Docker support** for deployment
+- Text-based genre classification (LSTM + GloVe)
+- Image-based genre classification (ResNet-18)
+- Multi-modal predictions for multi-label output
+- Web UI: enter a plot and/or upload a poster
+- Genre probability visualization
+- Docker support for deployment
 
 ---
 
-## 🗂️ Project Structure
+## Project structure
 
 ```
 .
-├── app.py                # Flask app entry point
-├── models/               # Model weights, tokenizer, embedding matrix
-├── templates/            # HTML templates (Jinja2)
-├── static/               # Static assets (CSS, JS)
-├── scripts/              # Training scripts
-├── notebook/             # Jupyter notebooks
-├── plots/                # Model evaluation plots
-├── webapp/               # Web deployment configs
-├── requirements.txt      # Python dependencies
-├── Dockerfile            # Docker instructions
+├── app.py                 # Flask app entry point
+├── models/                # Model weights, tokenizer, embedding matrix
+├── data/                  # Datasets & downloads for training (not in git — add locally)
+├── templates/             # HTML (Jinja2)
+├── static/                # CSS, JS, sample assets
+├── scripts/               # Training & data prep (see TRAINING_README.md)
+├── notebook/              # Jupyter notebooks
+├── plots/                 # Training / evaluation plots
+├── webapp/                # Deployment configs
+├── TRAINING_README.md     # Full training guide
+├── requirements.txt
+└── Dockerfile
 ```
 
 ---
 
-## 📈 Supported Genres
+## Supported genres
 
-- Drama
-- Comedy
-- Romance
-- Thriller
-- Action
-- Horror
-- Documentary
-- Animation
-- Music
-- Crime
+Drama, Comedy, Romance, Thriller, Action, Horror, Documentary, Animation, Music, Crime
 
 ---
 
-## ⚡ Getting Started
+## Getting started
 
 ### Prerequisites
 
 - Python 3.8+
-- pip
-- Git
-- torch, torchvision
-- Docker (optional, for deployment)
+- pip, Git
+- PyTorch / torchvision (installed via `requirements.txt`)
+- Docker (optional, for containerized runs)
 
-### Installation
+### Install and run locally
 
 ```bash
 git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
 cd Movie-Genre-Classification-Sys
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Windows:
+venv\Scripts\activate
+# macOS / Linux:
+source venv/bin/activate
+
 pip install -r requirements.txt
 ```
 
-### Run Locally
+Place the **trained** assets (for example `.pth` weights, `embedding_matrix.npy`, `tokenizer.json`) under `models/` if they are not already present—see `TRAINING_README.md` if you need to train them yourself.
 
 ```bash
 python app.py
 ```
-Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Enter a plot and/or upload a poster, then **Predict** to see text and image model outputs.
 
 ### Run with Docker
 
@@ -90,71 +87,40 @@ docker run -p 5000:5000 movie-genre-classifier
 ```
 
 ---
-### 💡 How to Use (For People Cloning the Repo)
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
-   cd Movie-Genre-Classification-Sys
-   ```
+## Training your own models
 
-2. **Create and activate a virtual environment:**
-   ```bash
-   python -m venv venv
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
+Training expects dataset files under `data/` (see [TRAINING_README.md](TRAINING_README.md) for filenames and layout).
 
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+**End-to-end pipeline** (GloVe download, text + image training, artifacts under `models/` and `plots/`):
 
-4. **Download model weights and assets:**
-   - Place the required model files (`.pth`, `embedding_matrix.npy`, `tokenizer.json`, etc.) in the `models/` directory.
-   - If not included, follow instructions in the repo or contact the maintainer.
+```bash
+python scripts/train_all_models.py
+```
 
-5. **Run the Flask app:**
-   ```bash
-   python app.py
-   ```
-
-6. **Open your browser:**
-   - Go to [http://127.0.0.1:5000](http://127.0.0.1:5000)
-
-7. **Use the web interface:**
-   - Enter a movie plot and/or upload a poster image.
-   - Click **Predict** to see genre predictions from both text and image models.
+For step-by-step options, per-model scripts, and troubleshooting, see **TRAINING_README.md**. After training, you can run `python test_models.py` to smoke-test the saved weights.
 
 ---
 
-**Tip:**  
-For Docker deployment, use the provided `Dockerfile` and follow the Docker instructions
----
+## Model details
 
-## 🧠 Model Details
+### Text (LSTM)
 
-### Text Model (LSTM)
-
-- GloVe (100d) embeddings
+- GloVe 100d embeddings
 - Custom tokenizer (`models/tokenizer.json`)
-- BiLSTM → Mean Pooling → Dense layers
+- BiLSTM, mean pooling, dense head
 - Embedding matrix: `models/embedding_matrix.npy`
 
-### Image Model (ResNet-18)
+### Image (ResNet-18)
 
-- Pretrained ResNet-18 (torchvision)
-- Final FC layer: 10-class sigmoid output
-- Poster images normalized and resized
+- torchvision ResNet-18 backbone (ImageNet pretrained)
+- Final layer: 10-class sigmoid for multi-label output
+- Posters resized and normalized to match training
 
 ---
 
-## 🤝 Acknowledgements
+## Acknowledgements
 
-- TMDB Dataset
-- GloVe Embeddings (Stanford)
+- TMDB dataset
+- GloVe embeddings (Stanford NLP)
 - PyTorch, Flask, torchvision
-
----
