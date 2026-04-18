@@ -1,4 +1,4 @@
-# Multi-Modal Movie Genre Classification System
+# NeuralNetflix - Multi-Modal Movie Genre Classification System
 
 A Flask web app for **multi-label movie genre classification** using both **textual (plot)** and **visual (poster image)** inputs. Combines LSTM (text) and ResNet-18 (image) models trained on a balanced TMDB dataset across the top 10 genres.
 
