@@ -1,4 +1,5 @@
 import os
+import __main__
 from flask import Flask, request, jsonify, render_template
 import torch
 import torch.nn as nn
@@ -11,6 +12,19 @@ from torchvision import models, transforms
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 DEVICE = torch.device("cpu")
 print(f"✅ Using device: {DEVICE}")
+
+# Repo root (works with gunicorn / Render regardless of process cwd)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+
+
+def _torch_load_weights(path, *, map_location):
+    """Load a state_dict .pth; prefer weights_only=True when supported (PyTorch 2.4+)."""
+    try:
+        return torch.load(path, map_location=map_location, weights_only=True)
+    except TypeError:
+        return torch.load(path, map_location=map_location)
+
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -100,6 +114,38 @@ class GenreLSTM(nn.Module):
         dropped = self.dropout(pooled)
         return self.fc(dropped)
 
+
+# Tokenizer was pickled while running the training script as __main__, so the
+# class path is __main__.PyTorchTokenizer. Under gunicorn, __main__ is not this
+# module — register our class there so pickle.load succeeds on Render.
+_TEXT_MODEL_CACHE = None
+
+
+def _get_cached_text_model():
+    global _TEXT_MODEL_CACHE
+    if _TEXT_MODEL_CACHE is not None:
+        return _TEXT_MODEL_CACHE
+
+    __main__.PyTorchTokenizer = PyTorchTokenizer
+
+    tok_path = os.path.join(MODEL_DIR, "tokenizer.pickle")
+    emb_path = os.path.join(MODEL_DIR, "embedding_matrix.npy")
+    weights_path = os.path.join(MODEL_DIR, "genre_classifier.pth")
+
+    with open(tok_path, "rb") as f:
+        tokenizer = pickle.load(f)
+
+    embedding_matrix = np.load(emb_path)
+    txt_state = _torch_load_weights(weights_path, map_location=DEVICE)
+
+    model = GenreLSTM(embedding_matrix).to(DEVICE)
+    model.load_state_dict(txt_state)
+    model.eval()
+
+    _TEXT_MODEL_CACHE = (tokenizer, model)
+    return _TEXT_MODEL_CACHE
+
+
 # ─────────── Routes ───────────
 @app.route("/")
 def home():
@@ -113,18 +159,7 @@ def predict_text():
         return jsonify({"error": "No plot provided"}), 400
 
     try:
-        print("🔍 Loading tokenizer...")
-        with open('models/tokenizer.pickle', 'rb') as f:
-            tokenizer = pickle.load(f)
-
-        print("🔍 Loading embedding matrix and model state...")
-        embedding_matrix = np.load('models/embedding_matrix.npy')
-        txt_state = torch.load('models/genre_classifier.pth', map_location=DEVICE)
-
-        print("🔍 Initializing model...")
-        model = GenreLSTM(embedding_matrix).to(DEVICE)
-        model.load_state_dict(txt_state)
-        model.eval()
+        tokenizer, model = _get_cached_text_model()
 
         print("🔍 Tokenizing input...")
         seq = tokenizer.texts_to_sequences([plot])[0]
@@ -157,7 +192,10 @@ def predict_image():
     try:
         model = models.resnet18(pretrained=False)
         model.fc = nn.Linear(model.fc.in_features, len(GENRE_COLUMNS))
-        state = torch.load('models/poster_genre_classifier.pth', map_location=DEVICE)
+        state = _torch_load_weights(
+            os.path.join(MODEL_DIR, "poster_genre_classifier.pth"),
+            map_location=DEVICE,
+        )
         model.load_state_dict(state, strict=False)
         model.to(DEVICE).eval()
 
