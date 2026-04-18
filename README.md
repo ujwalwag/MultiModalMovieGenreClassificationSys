@@ -1,13 +1,13 @@
 # Multi-Modal Movie Genre Classification System
 
-A Flask web app for **multi-label movie genre classification** using both **text** (plot) and **visual** (poster) inputs. It combines an LSTM text model with GloVe embeddings and a ResNet-18 image model, trained on a balanced TMDB dataset across the top 10 genres. The stack is **Python 3.8+**, **PyTorch**, and **Flask**.
+A Flask web app for **multi-label movie genre classification** using both **textual (plot)** and **visual (poster image)** inputs. Combines LSTM (text) and ResNet-18 (image) models trained on a balanced TMDB dataset across the top 10 genres.
 
 ---
 
 ## Live demo
 
 - [Demo 1](https://myapp-284861369113.us-central1.run.app/)
-- [Demo 2](https://movie-genre-classification-sys.onrender.com)
+- [Demo 2](https://multimodalmoviegenreclassificationsys.onrender.com)
 
 ---
 
@@ -57,27 +57,22 @@ Drama, Comedy, Romance, Thriller, Action, Horror, Documentary, Animation, Music,
 - PyTorch / torchvision (installed via `requirements.txt`)
 - Docker (optional, for containerized runs)
 
-### Install and run locally
+### Installation
 
 ```bash
 git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
 cd Movie-Genre-Classification-Sys
 python -m venv venv
-# Windows:
-venv\Scripts\activate
-# macOS / Linux:
-source venv/bin/activate
-
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Place the **trained** assets (for example `.pth` weights, `embedding_matrix.npy`, `tokenizer.json`) under `models/` if they are not already present—see `TRAINING_README.md` if you need to train them yourself.
+### Run Locally
 
 ```bash
 python app.py
 ```
-
-Open [http://127.0.0.1:5000](http://127.0.0.1:5000). Enter a plot and/or upload a poster, then **Predict** to see text and image model outputs.
+Visit [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 ### Run with Docker
 
@@ -87,19 +82,48 @@ docker run -p 5000:5000 movie-genre-classifier
 ```
 
 ---
+### 💡 How to Use (For People Cloning the Repo)
 
-## Training your own models
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/ujwalwag/Movie-Genre-Classification-Sys.git
+   cd Movie-Genre-Classification-Sys
+   ```
 
-Training expects dataset files under `data/` (see [TRAINING_README.md](TRAINING_README.md) for filenames and layout).
+2. **Create and activate a virtual environment:**
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
 
-**End-to-end pipeline** (GloVe download, text + image training, artifacts under `models/` and `plots/`):
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-```bash
-python scripts/train_all_models.py
-```
+4. **Download model weights and assets:**
+   - Place the required model files (`.pth`, `embedding_matrix.npy`, `tokenizer.json`, etc.) in the `models/` directory.
+   - If not included, follow instructions in the repo or contact the maintainer.
 
-For step-by-step options, per-model scripts, and troubleshooting, see **TRAINING_README.md**. After training, you can run `python test_models.py` to smoke-test the saved weights.
+5. **Run the Flask app:**
+   ```bash
+   python app.py
+   ```
 
+6. **Open your browser:**
+   - Go to [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+7. **Use the web interface:**
+   - Enter a movie plot and/or upload a poster image.
+   - Click **Predict** to see genre predictions from both text and image models.
+
+---
+
+**Tip:**  
+For Docker deployment, use the provided `Dockerfile` and follow the Docker instructions
 ---
 
 ## Model details
