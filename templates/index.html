@@ -271,12 +271,12 @@
   <div class="carousel-wrapper">
     <div class="carousel-description" id="carousel-desc">
       <h3>EDA, Data Preprocessing, Feature Engineering</h3>
-      <p id="desc-text">.</p>
+      <p id="desc-text"></p>
     </div>
 
     <div class="carousel-container">
       <button class="scroll-btn left" onclick="changeSlide(-1)">❮</button>
-      <img id="carousel-image" src="{{ url_for('static', filename='assets/testimage1.png') }}" alt="Movie Image">
+      <img id="carousel-image" src="{{ url_for('static', filename='assets/1.jpg') }}" alt="Data preparation slide">
       <button class="scroll-btn right" onclick="changeSlide(1)">❯</button>
     </div>
   </div>
@@ -493,6 +493,13 @@
       document.getElementById("carousel-image").src = images[currentSlide];
       document.getElementById("desc-text").innerText = descriptions[currentSlide];
     }
+
+    /* Initial src must match images[0]; changeSlide only ran on arrow click before */
+    (function initCarousel() {
+      currentSlide = 0;
+      document.getElementById("carousel-image").src = images[0];
+      document.getElementById("desc-text").innerText = descriptions[0];
+    })();
   </script>
   <script>
     function scrollToSection(id) {
